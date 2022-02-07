@@ -44,3 +44,9 @@ function constitution(){
     valueConstitution.setAttribute("max", 40 - totalConstitution);
     bonusMalusConstitution.textContent = Number(valueConstitution.value) - 10; 
 }
+// animation loader de la page
+let loader = document.querySelector(".loader");
+window.addEventListener("load", () => {
+    loader.classList.add("transition-loader");
+    loader.style = "z-index: -10";
+})

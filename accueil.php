@@ -1,37 +1,20 @@
     <?php 
-    session_start();
-        require('bdd.php');
-
+        session_start();
+        require("bdd.php");
         $errorInscription1 = "Veuillez renseigner votre pseudo ! ";
         $errorInscription12 = "Votre pseudo doit être compris entre 3 et 16 caractères !";
         $errorInscription2 = "Veuillez renseigner le niveau de difficulté ! ";
-
+        if(isset($_POST['btn-connexion'])){
+            $mailConnexion = htmlspecialchars($_POST["mail"]);
+            $mdpConnexion = htmlspecialchars($_POST["mdp"]);
+        }
         if(isset($_POST['btnInscription'])){
             $pseudo = htmlspecialchars($_POST['pseudo']);
             $difficulte = htmlspecialchars($_POST["difficulte"]);
             $mailInscription = htmlspecialchars($_POST['mailInscription']);
             $mailInscription2 = htmlspecialchars($_POST['mailInscription2']);
             $mdpInscription = sha1($_POST['mdpInscription']);
-            $mdpInscription2 = sha1($_POST['mdpInscription2']);
-
-            $_SESSION["pseudo"] = $pseudo;
-            $_SESSION["difficulte"] = $difficulte;
-
-            if(!empty($pseudo)){
-                header("Location: accueil.php?errorInscription");
-                if(!empty($difficulte)){
-                    if(strlen($_SESSION["pseudo"]) <= 16 && strlen($_SESSION["pseudo"]) >= 3){
-
-                        //header("Location: accueil.php?errorInscription");
-                    }else{
-                        header("Location: accueil.php?errorInscription&errorInscription12");
-                    }
-                }else{
-                    header("Location: accueil.php?errorInscription&errorInscription2");
-                }
-            }else{
-                header("Location: accueil.php?errorInscription&errorInscription1");
-            }
+            $mdpInscription2 = sha1($_POST['mdpInscription2']); 
         }
     ?>
 <!DOCTYPE html>
@@ -43,11 +26,23 @@
         <header>
 
         </header>
+        <div class="loader">
+            <span class="lettre">C</span>
+            <span class="lettre">H</span>
+            <span class="lettre">A</span>
+            <span class="lettre">R</span>
+            <span class="lettre">G</span>
+            <span class="lettre">E</span>
+            <span class="lettre">M</span>
+            <span class="lettre">E</span>
+            <span class="lettre">N</span>
+            <span class="lettre">T</span>
+        </div>
         <div class="flex-column accueil-block">
             <img src="images/LogoAventure.jpg">
             <h1>Le jeu</h1>
             <form method="POST" action="connexion.php" class="form-connexion">
-                <div class="flex-column connexion" style="<?php if(isset($_GET["errorInscription"])){?>display: none;<?php } ?>" id="connexion">
+                <div class="flex-column connexion" id="connexion">
                     <h2>Connexion</h2>
                     <div class="flex-column">
                         <div class="flex auto">
@@ -60,41 +55,32 @@
                         <label for="mdp"><i class="fa fa-lock"></i></label>
                         <input type="password" name="mdp" id="mdp" placeholder="Entrez votre mot de passe...">
                     </div>
-                    <input type="submit" name="btn" id="btn" value="Entrez dans l'aventure !">
+                    <input type="submit" name="btn-connexion" id="btn" value="Entrez dans l'aventure !">
                     <p class="text-under-submit">Pas encore inscrit ? <span id="span-inscription">Cliquez ici.</span></p>
                 </div>
             </form>
             <form method="POST" class="form-connexion">
-                <div class="flex-column inscription" style="<?php if(isset($_GET["errorInscription"])){?>display: block;<?php } ?>" id="inscription">
+                <div class="flex-column inscription" id="inscription">
                     <h2>Créer votre avatar !</h2>
                     <div class="flex-column">
                         <div class="flex auto">
                             <label for="pseudo"><i class="fa fa-user-circle"></i></label>
-                            <input type="text" name="pseudo" id="pseudo" placeholder="Entrez votre pseudonyme..." value="<?php if(isset($_SESSION["pseudo"])){ echo $_SESSION["pseudo"]; } ?>">
+                            <input type="text" name="pseudo" id="pseudo" placeholder="Entrez votre pseudonyme...">
                         </div>
-                        <div class="erreurForm" <?php if(isset($_GET["errorInscription1"]) || isset($_GET["errorInscription12"])){ echo "style='display: block;'";} ?>>
-                            <?php 
-                                if(isset($_GET["errorInscription1"])){ 
-                                    echo $errorInscription1; 
-                                }
-                                if(isset($_GET["errorInscription12"])){
-                                    echo $errorInscription12;
-                                }
-                            ?>
-                        </div>
+                        <div class="erreurForm"></div>
                     </div>
                     <div class="flex-column">
                         <div class="flex auto">
                             <label for="difficulte"><i class="iconify" data-icon="emojione-monotone:level-slider"></i></label>
                             <select name="difficulte" id="difficulte">
-                                <option value="<?php if(!empty($_SESSION["difficulte"])){ echo $_SESSION["difficulte"]; } ?>"><?php if(!empty($_SESSION["difficulte"])){ echo $_SESSION["difficulte"]; }else{?>Veuillez sélectionner une difficulté...<?php }?></option>
-                                <?php if($_SESSION["difficulte"] != "facile"){?><option value="facile">facile</option><?php } ?>
-                                <?php if($_SESSION["difficulte"] != "normale"){?><option value="normale">normale</option><?php } ?>
-                                <?php if($_SESSION["difficulte"] != "challenge"){?><option value="challenge">challenge</option><?php } ?>
-                                <?php if($_SESSION["difficulte"] != "impossible"){?><option value="impossible">impossible</option><?php } ?>
+                                <option value=""><span>Veuillez sélectionner une difficulté...</span></option>
+                                <option value="facile">facile</option>
+                                <option value="normale">normale</option>
+                                <option value="challenge">challenge</option>
+                                <option value="impossible">impossible</option>
                             </select>
                         </div>
-                        <div class="erreurForm" <?php if(isset($_GET["errorInscription2"])){ echo "style='display: block;'";} ?>><?php if(isset($_GET["errorInscription2"])){ echo $errorInscription2; } ?></div>
+                        <div class="erreurForm"></div>
                     </div>
                     <div class="flex caracteristiques">
                         <label for="force"><i class="iconify" data-icon="icon-park-outline:muscle"></i></label>
