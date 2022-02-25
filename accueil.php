@@ -1,22 +1,38 @@
-    <?php 
-        session_start();
-        require("bdd.php");
-        $errorInscription1 = "Veuillez renseigner votre pseudo ! ";
-        $errorInscription12 = "Votre pseudo doit être compris entre 3 et 16 caractères !";
-        $errorInscription2 = "Veuillez renseigner le niveau de difficulté ! ";
-        if(isset($_POST['btn-connexion'])){
-            $mailConnexion = htmlspecialchars($_POST["mail"]);
-            $mdpConnexion = htmlspecialchars($_POST["mdp"]);
+<?php 
+    session_start();
+    require("bdd.php");
+    if(isset($_POST['btn-connexion'])){
+        $mailConnexion = htmlspecialchars($_POST["mail"]);
+        $mdpConnexion = htmlspecialchars($_POST["mdp"]);
+        $mdpConnexion = sha1($mdpConnexion);
+        echo $mdpConnexion;
+        $requete_membres = $bdd -> prepare("SELECT mail, mdp FROM users WHERE mail = ? AND mdp = ?");
+        $requete_membres -> execute(array($mailConnexion, $mdpConnexion));
+        $user_exist = $requete_membres -> rowCount();
+        if($user_exist == 1){
+            $requete_user = $bdd -> prepare("SELECT * FROM users WHERE mail = ?");
+            $requete_user -> execute(array($mailConnexion));
+            $user = $requete_user -> fetch(); 
+            $_SESSION["id"] = $user["id"];
+            $_SESSION["pseudo"] = $user["pseudo"];
+            $_SESSION["mail"] = $user["mail"];
+            $_SESSION["mdp"] = $user["mdp"];
+            header("Location: connexion.php");
         }
-        if(isset($_POST['btnInscription'])){
-            $pseudo = htmlspecialchars($_POST['pseudo']);
-            $difficulte = htmlspecialchars($_POST["difficulte"]);
-            $mailInscription = htmlspecialchars($_POST['mailInscription']);
-            $mailInscription2 = htmlspecialchars($_POST['mailInscription2']);
-            $mdpInscription = sha1($_POST['mdpInscription']);
-            $mdpInscription2 = sha1($_POST['mdpInscription2']); 
-        }
-    ?>
+    }
+    if(isset($_POST['btnInscription'])){
+        $pseudo = htmlspecialchars($_POST['pseudo']);
+        $difficulte = htmlspecialchars($_POST["difficulte"]);
+        $force = htmlspecialchars($_POST["force"]);
+        $agilite = htmlspecialchars($_POST["agilite"]);
+        $dexterite = htmlspecialchars($_POST["dexterite"]);
+        $constitution = htmlspecialchars($_POST["constitution"]);
+        $mailInscription = htmlspecialchars($_POST['mailInscription']);
+        $mailInscription2 = htmlspecialchars($_POST['mailInscription2']);
+        $mdpInscription = sha1($_POST['mdpInscription']);
+        $mdpInscription2 = sha1($_POST['mdpInscription2']); 
+    }
+?>
 <!DOCTYPE html>
 <html>
     <?php
@@ -41,7 +57,7 @@
         <div class="flex-column accueil-block">
             <img src="images/LogoAventure.jpg">
             <h1>Le jeu</h1>
-            <form method="POST" action="connexion.php" class="form-connexion">
+            <form method="POST" class="form-connexion">
                 <div class="flex-column connexion" id="connexion">
                     <h2>Connexion</h2>
                     <div class="flex-column">
@@ -59,7 +75,7 @@
                     <p class="text-under-submit">Pas encore inscrit ? <span id="span-inscription">Cliquez ici.</span></p>
                 </div>
             </form>
-            <form method="POST" class="form-connexion">
+            <form method="GET" action="inscription.php" class="form-connexion">
                 <div class="flex-column inscription" id="inscription">
                     <h2>Créer votre avatar !</h2>
                     <div class="flex-column">
@@ -128,7 +144,6 @@
                     </div>
                     <input type="submit" name="btnInscription" id="btnInscription" value="S'inscrire">
                     <p class="text-under-submit">Déjà inscrit ? <span id="span-connexion">Cliquez ici.</span></p>
-                    <div class="erreurForm" id="erreurPseudo"><?php if(isset($_GET["errorInscription1"])){ echo $errorInscription1; } ?></div>
                 </div>
             </form>
         </div>
